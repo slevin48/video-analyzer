@@ -11,9 +11,15 @@ except OSError as error:
 
 st.title('Video Analyzer')
 
+st.markdown('Features')
+
+vts = st.checkbox("Video 2 Speech")
+if vts:
+    stt = st.checkbox("Speech 2 Text")
+
 # 2 modes: youtube or local
 src = st.radio("Youtube Download or Local Upload",["Download","Upload"])
-st.write(src)
+# st.write(src)
 if src == "Upload":
     up = st.file_uploader("Upload a video", type=["mp4"])
 
@@ -23,14 +29,13 @@ if src == "Upload":
         st.video(up,format='video/mp4', start_time=0)
         path = 'downloads/'+up.name
 else:
-    # VS Code for the Web: vscode.dev (livestream Oct 21)
-    url = 'https://www.youtube.com/watch?v=sy3TUb_iVJM'
+    url = 'https://www.youtube.com/watch?v=S320N3sxinE'
 
     url = st.text_input('Youtube URL',url)
 
     # Download Youtube video
     youtube = pytube.YouTube(url)
-    videos = youtube.streams.filter(file_extension='mp4').order_by('resolution')
+    videos = youtube.streams.filter(progressive=True, file_extension='mp4').order_by('resolution')
     l = [s.resolution + " (" + str(round(s.filesize/2**10/2**10)) + " MB)" for s in videos]
     i = st.radio("Select resolution",range(len(videos)),format_func = lambda x: l[x])
 
@@ -44,36 +49,38 @@ else:
         st.text(title)
         st.video(path,format='video/mp4', start_time=0)
 
-# try:
-#     # Video to Audio
-#     print(path)
-#     my_clip = mp.VideoFileClip(path)
-#     duration = my_clip.duration
-#     # my_clip.audio.write_audiofile("downloads/"+title+".wav")
-#     my_clip.audio.write_audiofile("downloads/speech.wav")
-#     st.text("Duration: "+str(duration))
-#     st.audio("downloads/speech.wav", format='audio/wav')
+try:
+    if vts:
+        # Video to Audio
+        print(path)
+        my_clip = mp.VideoFileClip(path)
+        duration = my_clip.duration
+        # my_clip.audio.write_audiofile("downloads/"+title+".wav")
+        my_clip.audio.write_audiofile("downloads/speech.wav")
+        st.text("Duration: "+str(duration))
+        st.audio("downloads/speech.wav", format='audio/wav')
 
-#     # ## Speech to text
-#     r = sr.Recognizer()
-#     # break in 60 sec intervals
-#     audioFile = sr.AudioFile("downloads/speech.wav")
-#     i = 0
-#     audiolist = []
-#     while i*60 < duration:
-#         with audioFile as source:
-#             audio = r.record(source, offset=i*60, duration=60)
-#             audiolist.append(audio)
-#         i += 1
+        if stt:
+            # ## Speech to text
+            r = sr.Recognizer()
+            # break in 60 sec intervals
+            audioFile = sr.AudioFile("downloads/speech.wav")
+            i = 0
+            audiolist = []
+            while i*60 < duration:
+                with audioFile as source:
+                    audio = r.record(source, offset=i*60, duration=60)
+                    audiolist.append(audio)
+                i += 1
 
-#     with open("downloads/speech.txt","w") as f:
-#         for audio in audiolist:
-#             txt = r.recognize_google(audio)
-#             f.write(txt)
-#             st.text(txt)
+            with open("downloads/speech.txt","w") as f:
+                for audio in audiolist:
+                    txt = r.recognize_google(audio)
+                    f.write(txt)
+                    st.text(txt)
 
-#     data = open("downloads/speech.txt", "r").read()
-#     b64 = base64.b64encode(data.encode()).decode()
-#     st.markdown(f'<a href="data:file/txt;base64,{b64}" download="speech.txt">speech.txt</a>',unsafe_allow_html=True)
-# except NameError:
-#     print('No video to process')
+            data = open("downloads/speech.txt", "r").read()
+            b64 = base64.b64encode(data.encode()).decode()
+            st.markdown(f'<a href="data:file/txt;base64,{b64}" download="speech.txt">speech.txt</a>',unsafe_allow_html=True)
+except NameError:
+    print('No video to process')
