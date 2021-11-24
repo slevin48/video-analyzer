@@ -65,6 +65,8 @@ try:
         save = st.button("save frame")
         if save:
             Image.fromarray(f).save("downloads/frame_"+str(t.second)+".jpg")
+            with open("downloads/frame_"+str(t.second)+".jpg", "rb") as file:
+                dlframe = st.download_button("Download frame",data=file,file_name="frame_"+str(t.second)+".jpg",mime="image/png")
 
     if vts:
         # Video to Audio
