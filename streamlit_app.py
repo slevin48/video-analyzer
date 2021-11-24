@@ -3,6 +3,7 @@ import pytube
 import moviepy.editor as mp
 import speech_recognition as sr
 import os, base64
+from datetime import time,timedelta
 
 try:
     os.mkdir('downloads')
@@ -53,11 +54,12 @@ try:
     
     print(path)
     my_clip = mp.VideoFileClip(path)
-    duration = my_clip.duration
+    duration = int(my_clip.duration)
+    minutes, seconds = divmod(duration, 60)
 
     if fs:
-        t = st.slider("Select frame",min_value=0.0,max_value=duration,on_change=None)
-        f = my_clip.get_frame(t)
+        t = st.slider("Select frame",step=timedelta(seconds=1),min_value=time(minute=0,second=0),max_value=time(minute=minutes,second=seconds),format = "mm:ss")
+        f = my_clip.get_frame(t.second)
         st.image(f)
 
     if vts:
