@@ -2,3 +2,4 @@ streamlit
 pytube
 moviepy
 SpeechRecognition
+pytesseract

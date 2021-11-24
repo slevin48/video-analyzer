@@ -5,6 +5,7 @@ import speech_recognition as sr
 import os, base64
 from datetime import time,timedelta
 from PIL import Image
+import pytesseract
 
 try:
     os.mkdir('downloads')
@@ -16,6 +17,8 @@ st.title('Video Analyzer')
 st.markdown('Features')
 
 fs = st.checkbox("Frame Selection")
+if fs:
+    ocr = st.checkbox("Optical Character Recognition")
 vts = st.checkbox("Video 2 Speech")
 if vts:
     stt = st.checkbox("Speech 2 Text")
@@ -62,11 +65,14 @@ try:
         t = st.slider("Select frame",step=timedelta(seconds=1),min_value=time(minute=0,second=0),max_value=time(minute=minutes,second=seconds),format = "mm:ss")
         f = my_clip.get_frame(t.second)
         st.image(f)
-        save = st.button("save frame")
+        save = st.button("save frame + ocr")
         if save:
             Image.fromarray(f).save("downloads/frame_"+str(t.second)+".jpg")
             with open("downloads/frame_"+str(t.second)+".jpg", "rb") as file:
                 dlframe = st.download_button("Download frame",data=file,file_name="frame_"+str(t.second)+".jpg",mime="image/png")
+            if ocr:
+                txt = pytesseract.image_to_string(f)
+                st.markdown(txt)
 
     if vts:
         # Video to Audio
