@@ -4,6 +4,7 @@ import moviepy.editor as mp
 import speech_recognition as sr
 import os, base64
 from datetime import time,timedelta
+from PIL import Image
 
 try:
     os.mkdir('downloads')
@@ -61,6 +62,9 @@ try:
         t = st.slider("Select frame",step=timedelta(seconds=1),min_value=time(minute=0,second=0),max_value=time(minute=minutes,second=seconds),format = "mm:ss")
         f = my_clip.get_frame(t.second)
         st.image(f)
+        save = st.button("save frame")
+        if save:
+            Image.fromarray(f).save("downloads/frame_"+str(t.second)+".jpg")
 
     if vts:
         # Video to Audio
