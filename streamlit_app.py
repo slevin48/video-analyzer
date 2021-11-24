@@ -13,6 +13,7 @@ st.title('Video Analyzer')
 
 st.markdown('Features')
 
+fs = st.checkbox("Frame Selection")
 vts = st.checkbox("Video 2 Speech")
 if vts:
     stt = st.checkbox("Speech 2 Text")
@@ -38,11 +39,10 @@ else:
     videos = youtube.streams.filter(progressive=True, file_extension='mp4').order_by('resolution')
     l = [s.resolution + " (" + str(round(s.filesize/2**10/2**10)) + " MB)" for s in videos]
     i = st.radio("Select resolution",range(len(videos)),format_func = lambda x: l[x])
-
-    dl = st.button('Download')
-
-    if dl:
-        video = videos[i]
+    video = videos[i]
+    dl = st.checkbox('Download')
+    
+    if dl:   
         st.write(video)
         title = video.title
         path = video.download('downloads')
@@ -50,15 +50,22 @@ else:
         st.video(path,format='video/mp4', start_time=0)
 
 try:
+    
+    print(path)
+    my_clip = mp.VideoFileClip(path)
+    duration = my_clip.duration
+
+    if fs:
+        t = st.slider("Select frame",min_value=0.0,max_value=duration,on_change=None)
+        f = my_clip.get_frame(t)
+        st.image(f)
+
     if vts:
         # Video to Audio
-        print(path)
-        my_clip = mp.VideoFileClip(path)
-        duration = my_clip.duration
-        # my_clip.audio.write_audiofile("downloads/"+title+".wav")
-        my_clip.audio.write_audiofile("downloads/speech.wav")
+        my_clip.audio.write_audiofile("downloads/"+title+".wav")
+        # my_clip.audio.write_audiofile("downloads/speech.wav")
         st.text("Duration: "+str(duration))
-        st.audio("downloads/speech.wav", format='audio/wav')
+        st.audio("downloads/"+title+".wav", format='audio/wav')
 
         if stt:
             # ## Speech to text
