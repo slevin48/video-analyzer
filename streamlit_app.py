@@ -35,7 +35,7 @@ if src == "Upload":
         st.video(up,format='video/mp4', start_time=0)
         path = 'downloads/'+up.name
 else:
-    url = 'https://www.youtube.com/watch?v=S320N3sxinE'
+    url = 'https://www.youtube.com/watch?v=R2nr1uZ8ffc'
 
     url = st.text_input('Youtube URL',url)
 
@@ -63,13 +63,14 @@ try:
 
     if fs:
         t = st.slider("Select frame",step=timedelta(seconds=1),min_value=time(minute=0,second=0),max_value=time(minute=minutes,second=seconds),format = "mm:ss")
-        f = my_clip.get_frame(t.second)
+        time = t.second + 60*t.minute
+        f = my_clip.get_frame(time)
         st.image(f)
         save = st.button("save frame + ocr")
         if save:
-            Image.fromarray(f).save("downloads/frame_"+str(t.second)+".jpg")
-            with open("downloads/frame_"+str(t.second)+".jpg", "rb") as file:
-                dlframe = st.download_button("Download frame",data=file,file_name="frame_"+str(t.second)+".jpg",mime="image/png")
+            Image.fromarray(f).save("downloads/frame_"+str(time)+".jpg")
+            with open("downloads/frame_"+str(time)+".jpg", "rb") as file:
+                dlframe = st.download_button("Download frame",data=file,file_name="frame_"+str(time)+".jpg",mime="image/png")
             if ocr:
                 txt = pytesseract.image_to_string(f)
                 st.markdown(txt)
