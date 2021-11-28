@@ -13,8 +13,15 @@ st.title('Video Analyzer')
 url = 'https://www.youtube.com/watch?v=R2nr1uZ8ffc'
 url = st.text_input('Youtube URL',url)
 
+
 options = {
     "events": ["onProgress"],
+    "progress_interval": 1000,
+    "volume": 1.0,
+    "playing": False,
+    "loop": False,
+    "controls": True,
+    "muted": False,
 }
 
 event = st_player(url,**options,key="youtube_player")
