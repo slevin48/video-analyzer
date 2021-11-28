@@ -6,13 +6,13 @@ Extract images from videos interactively
 ## 🎬 Frame Selection
 
 https://user-images.githubusercontent.com/12418115/143787932-b89e221c-51bc-4ffe-a0eb-8ccb00ae1985.mp4
-
+<!-- 
 ## 👀 Optical Character Recognition
 
 Requires [Tesseract](https://tesseract-ocr.github.io/) to be installed locally
 
 https://user-images.githubusercontent.com/12418115/143250106-2bac54d4-24a8-4ae5-9963-d9eb0adc030a.mp4
-
+ -->
 
 ## ▶️ Streamlit Player
 

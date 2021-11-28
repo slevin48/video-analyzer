@@ -6,7 +6,7 @@ import speech_recognition as sr
 import os, base64
 from datetime import time,timedelta
 from PIL import Image
-import pytesseract
+# import pytesseract
 
 #create cache object for the "tlist"
 @st.cache(allow_output_mutation=True)
