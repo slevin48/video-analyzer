@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_player import st_player
 import pytube
 import moviepy.editor as mp
 import speech_recognition as sr
@@ -7,18 +8,25 @@ from datetime import time,timedelta
 from PIL import Image
 import pytesseract
 
+#create cache object for the "tlist"
+@st.cache(allow_output_mutation=True)
+def Tlist():
+    return []
+
+tlist=Tlist()
+
 try:
     os.mkdir('downloads')
-except OSError as error:
-    print(error)
+except:
+    pass
 
 st.title('Video Analyzer')
 
 st.markdown('Features')
 
 fs = st.checkbox("Frame Selection")
-if fs:
-    ocr = st.checkbox("Optical Character Recognition")
+# if fs:
+#     ocr = st.checkbox("Optical Character Recognition")
 vts = st.checkbox("Video 2 Speech")
 if vts:
     stt = st.checkbox("Speech 2 Text")
@@ -36,57 +44,74 @@ if src == "Upload":
         path = 'downloads/'+up.name
 else:
     url = 'https://www.youtube.com/watch?v=R2nr1uZ8ffc'
-
     url = st.text_input('Youtube URL',url)
 
+    options = {
+        "events": ["onProgress"],
+        "progress_interval": 1000,
+        "volume": 1.0,
+        "playing": False,
+        "loop": False,
+        "controls": True,
+        "muted": False,
+    }
+
+    event = st_player(url,**options,key="youtube_player")
+    
     # Download Youtube video
-    youtube = pytube.YouTube(url)
-    videos = youtube.streams.filter(progressive=True, file_extension='mp4').order_by('resolution')
-    l = [s.resolution + " (" + str(round(s.filesize/2**10/2**10)) + " MB)" for s in videos]
-    i = st.radio("Select resolution",range(len(videos)),format_func = lambda x: l[x])
-    video = videos[i]
     dl = st.checkbox('Download')
     
     if dl:   
+        youtube = pytube.YouTube(url)
+        videos = youtube.streams.filter(progressive=True, file_extension='mp4').order_by('resolution')
+        l = [s.resolution + " (" + str(round(s.filesize/2**10/2**10)) + " MB)" for s in videos]
+        i = st.radio("Select resolution",range(len(videos)),format_func = lambda x: l[x])
+        video = videos[i]
         st.write(video)
         title = video.title
         path = video.download('downloads')
         st.text(title)
-        st.video(path,format='video/mp4', start_time=0)
+        # st.video(path,format='video/mp4', start_time=0)
 
-try:
-    
-    print(path)
-    my_clip = mp.VideoFileClip(path)
-    duration = int(my_clip.duration)
-    minutes, seconds = divmod(duration, 60)
+        print(path)
+        my_clip = mp.VideoFileClip(path)
+        duration = int(my_clip.duration)
+        minutes, seconds = divmod(duration, 60)
 
     if fs:
-        t = st.slider("Select frame",step=timedelta(seconds=1),min_value=time(minute=0,second=0),max_value=time(minute=minutes,second=seconds),format = "mm:ss")
-        time = t.second + 60*t.minute
-        f = my_clip.get_frame(time)
-        st.image(f)
-        save = st.button("save frame + ocr")
-        if save:
-            Image.fromarray(f).save("downloads/frame_"+str(time)+".jpg")
-            with open("downloads/frame_"+str(time)+".jpg", "rb") as file:
-                dlframe = st.download_button("Download frame",data=file,file_name="frame_"+str(time)+".jpg",mime="image/png")
-            if ocr:
-                txt = pytesseract.image_to_string(f)
-                st.markdown(txt)
+        # Select frame
+        select = st.button('Select frame')
 
-    if vts:
+        if select:
+            t = round(event.data['playedSeconds'])
+            tlist.append(t)
+            st.write(tlist)
+        
+        if dl:
+            gen = st.button("Generate frames")
+
+            if gen:
+                for time in tlist:       
+                    f = my_clip.get_frame(time)
+                    st.image(f)
+                    Image.fromarray(f).save("downloads/frame_"+str(time)+".jpg")
+                    with open("downloads/frame_"+str(time)+".jpg", "rb") as file:
+                        st.download_button("Download frame",data=file,file_name="frame_"+str(time)+".jpg",mime="image/png", key=time)
+                    # if ocr:
+                    #     txt = pytesseract.image_to_string(f)
+                    #     st.markdown(txt)
+
+    if dl and vts:
         # Video to Audio
-        my_clip.audio.write_audiofile("downloads/"+title+".wav")
-        # my_clip.audio.write_audiofile("downloads/speech.wav")
+        my_clip.audio.write_audiofile("downloads/audio.wav")
         st.text("Duration: "+str(duration))
-        st.audio("downloads/"+title+".wav", format='audio/wav')
+        st.audio("downloads/audio.wav", format='audio/wav')
 
         if stt:
             # ## Speech to text
             r = sr.Recognizer()
             # break in 60 sec intervals
-            audioFile = sr.AudioFile("downloads/speech.wav")
+            audioFile = sr.AudioFile("downloads/audio.wav")
             i = 0
             audiolist = []
             while i*60 < duration:
@@ -104,5 +129,3 @@ try:
             data = open("downloads/speech.txt", "r").read()
             b64 = base64.b64encode(data.encode()).decode()
             st.markdown(f'<a href="data:file/txt;base64,{b64}" download="speech.txt">speech.txt</a>',unsafe_allow_html=True)
-except NameError:
-    print('No video to process')
