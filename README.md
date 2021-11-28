@@ -48,3 +48,4 @@ https://user-images.githubusercontent.com/12418115/143250106-2bac54d4-24a8-4ae5-
 - https://github.com/CookPete/react-player
 - https://github.com/okld/streamlit-gallery/blob/main/streamlit_gallery/components/react_player.py
 - https://discuss.streamlit.io/t/streamlit-player/3169  
+- https://discuss.streamlit.io/t/simple-example-of-persistence-and-waiting-for-input/2111

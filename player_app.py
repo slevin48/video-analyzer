@@ -2,9 +2,13 @@ import streamlit as st
 from streamlit_player import st_player
 import pytube
 import os
-import SessionState
 
-state = SessionState.get(tlist = [])
+#create cache object for the "tlist"
+@st.cache(allow_output_mutation=True)
+def Tlist():
+    return []
+
+tlist=Tlist()
 
 try:
     os.mkdir('downloads')
@@ -34,8 +38,8 @@ select = st.button('Select frame')
 
 if select:
     t = round(event.data['playedSeconds'])
-    state.tlist.append(t)
-    st.write(state.tlist)
+    tlist.append(t)
+    st.write(tlist)
     
 # Download Youtube video
 dl = st.button('Download')
