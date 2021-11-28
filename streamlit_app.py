@@ -73,7 +73,7 @@ else:
         st.text(title)
         # st.video(path,format='video/mp4', start_time=0)
 
-        print(path)
+        # print(path)
         my_clip = mp.VideoFileClip(path)
         duration = int(my_clip.duration)
         minutes, seconds = divmod(duration, 60)
