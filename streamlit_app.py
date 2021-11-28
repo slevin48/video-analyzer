@@ -6,6 +6,8 @@ import os, base64
 from datetime import time,timedelta
 from PIL import Image
 import pytesseract
+import pyautogui
+import keyboard
 
 try:
     os.mkdir('downloads')
@@ -16,6 +18,7 @@ st.title('Video Analyzer')
 
 st.markdown('Features')
 
+sc = st.checkbox("Screenshot")
 fs = st.checkbox("Frame Selection")
 if fs:
     ocr = st.checkbox("Optical Character Recognition")
@@ -60,6 +63,18 @@ try:
     my_clip = mp.VideoFileClip(path)
     duration = int(my_clip.duration)
     minutes, seconds = divmod(duration, 60)
+
+    if sc:   
+        n = 0
+        while True:
+            
+            if keyboard.read_key() == "p":
+                # st.write("You pressed p")
+                img = pyautogui.screenshot()
+                img.save(f'screenshot_{n}.png')
+                n+=1
+            if keyboard.read_key() == "esc":
+                break
 
     if fs:
         t = st.slider("Select frame",step=timedelta(seconds=1),min_value=time(minute=0,second=0),max_value=time(minute=minutes,second=seconds),format = "mm:ss")

@@ -3,3 +3,4 @@ pytube
 moviepy
 SpeechRecognition
 pytesseract
+pyautogui
