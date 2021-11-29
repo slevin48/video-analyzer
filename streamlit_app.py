@@ -11,6 +11,7 @@ import keyboard
 
 try:
     os.mkdir('downloads')
+    os.mkdir('screenshots')
 except OSError as error:
     print(error)
 
@@ -71,7 +72,7 @@ try:
             if keyboard.read_key() == "p":
                 # st.write("You pressed p")
                 img = pyautogui.screenshot()
-                img.save(f'screenshot_{n}.png')
+                img.save(f'screenshots/screenshot_{n}.png')
                 n+=1
             if keyboard.read_key() == "esc":
                 break

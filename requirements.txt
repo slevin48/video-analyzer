@@ -4,3 +4,4 @@ moviepy
 SpeechRecognition
 pytesseract
 pyautogui
+keyboard
