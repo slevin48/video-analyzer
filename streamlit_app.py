@@ -8,8 +8,11 @@ from datetime import time,timedelta
 from PIL import Image
 # import pytesseract
 
+if 'dl' not in st.session_state:
+    st.session_state.dl = False
+
 #create cache object for the "tlist"
-@st.cache(allow_output_mutation=True)
+@st.cache_data()
 def Tlist():
     return []
 
@@ -59,9 +62,11 @@ else:
     event = st_player(url,**options,key="youtube_player")
     
     # Download Youtube video
-    dl = st.checkbox('Download')
+    if st.button('Download'):
+        st.session_state.dl = True
     
-    if dl:   
+    if st.session_state.dl:
+        # st.write(st.session_state.dl)   
         youtube = pytube.YouTube(url)
         videos = youtube.streams.filter(progressive=True, file_extension='mp4').order_by('resolution')
         l = [s.resolution + " (" + str(round(s.filesize/2**10/2**10)) + " MB)" for s in videos]
@@ -71,7 +76,7 @@ else:
         title = video.title
         path = video.download('downloads')
         st.text(title)
-        # st.video(path,format='video/mp4', start_time=0)
+        st.video(path,format='video/mp4', start_time=0)
 
         # print(path)
         my_clip = mp.VideoFileClip(path)
@@ -87,7 +92,7 @@ else:
             tlist.append(t)
             st.write(tlist)
         
-        if dl:
+        if st.session_state.dl:
             gen = st.button("Generate frames")
 
             if gen:
@@ -101,7 +106,7 @@ else:
                     #     txt = pytesseract.image_to_string(f)
                     #     st.markdown(txt)
 
-    if dl and vts:
+    if st.session_state.dl and vts:
         # Video to Audio
         my_clip.audio.write_audiofile("downloads/audio.wav")
         st.text("Duration: "+str(duration))
