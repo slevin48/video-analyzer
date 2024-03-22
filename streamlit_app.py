@@ -108,15 +108,15 @@ else:
 
     if st.session_state.dl and vts:
         # Video to Audio
-        my_clip.audio.write_audiofile("downloads/audio.wav")
+        my_clip.audio.write_audiofile("downloads/audio.mp3")
         st.text("Duration: "+str(duration))
-        st.audio("downloads/audio.wav", format='audio/wav')
+        st.audio("downloads/audio.mp3", format='audio/mp3')
 
         if stt:
             # ## Speech to text
             r = sr.Recognizer()
             # break in 60 sec intervals
-            audioFile = sr.AudioFile("downloads/audio.wav")
+            audioFile = sr.AudioFile("downloads/audio.mp3")
             i = 0
             audiolist = []
             while i*60 < duration:
