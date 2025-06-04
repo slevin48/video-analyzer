@@ -1,6 +1,3 @@
 streamlit
-pytube
-moviepy
-SpeechRecognition
-pytesseract
+youtube-transcript-api
 streamlit-player
