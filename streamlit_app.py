@@ -1,12 +1,10 @@
 import streamlit as st
 from streamlit_player import st_player
-import pytube
-import moviepy.editor as mp
-import speech_recognition as sr
+from pytubefix import YouTube
+import moviepy as mp
 import os, base64
 from datetime import time,timedelta
 from PIL import Image
-# import pytesseract
 
 if 'dl' not in st.session_state:
     st.session_state.dl = False
@@ -67,7 +65,7 @@ else:
     
     if st.session_state.dl:
         # st.write(st.session_state.dl)   
-        youtube = pytube.YouTube(url)
+        youtube = YouTube(url)
         videos = youtube.streams.filter(progressive=True, file_extension='mp4').order_by('resolution')
         l = [s.resolution + " (" + str(round(s.filesize/2**10/2**10)) + " MB)" for s in videos]
         i = st.radio("Select resolution",range(len(videos)),format_func = lambda x: l[x])
